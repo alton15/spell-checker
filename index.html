@@ -275,6 +275,223 @@ function formatTime(totalSeconds) {
   const seconds = totalSeconds % 60;
   return String(minutes).padStart(2, '0') + ':' + String(seconds).padStart(2, '0');
 }
+
+// --- State Cleanup ---
+function cleanupExpiredCooldowns() {
+  const elapsed = getElapsedSeconds();
+  state.profiles = state.profiles.map(profile => ({
+    ...profile,
+    spells: profile.spells.map(spell => {
+      if (spell.endTime !== null && spell.endTime <= elapsed) {
+        return { ...spell, endTime: null };
+      }
+      return spell;
+    })
+  }));
+}
+
+// --- Event Handlers ---
+function handleToggle(e) {
+  const profileIndex = Number(e.target.dataset.profile);
+  const type = e.target.dataset.type;
+  const profile = state.profiles[profileIndex];
+
+  state.profiles[profileIndex] = {
+    ...profile,
+    [type]: e.target.checked,
+    spells: profile.spells.map(s => ({ ...s }))
+  };
+
+  render();
+}
+
+function handleSpellClick(e) {
+  const el = e.currentTarget;
+  const profileIndex = Number(el.dataset.profile);
+  const spellIndex = Number(el.dataset.spell);
+  const profile = state.profiles[profileIndex];
+  const spell = profile.spells[spellIndex];
+
+  const elapsed = getElapsedSeconds();
+  const cooldown = calculateCooldown(
+    spell.baseCooldown,
+    profile.cosmicInsight,
+    profile.ionianBoots
+  );
+
+  const newSpells = profile.spells.map((s, i) => {
+    if (i === spellIndex) {
+      return { ...s, endTime: elapsed + cooldown };
+    }
+    return { ...s };
+  });
+
+  state.profiles[profileIndex] = {
+    ...profile,
+    spells: newSpells
+  };
+
+  render();
+}
+
+function handleGameButton() {
+  if (state.gameStartTime === null) {
+    state.gameStartTime = Date.now();
+    state.timerInterval = setInterval(render, 1000);
+  } else {
+    clearInterval(state.timerInterval);
+    state.timerInterval = null;
+    state.gameStartTime = null;
+    state.profiles = Array.from({ length: 5 }, () => ({
+      cosmicInsight: false,
+      ionianBoots: false,
+      spells: BASE_COOLDOWNS.map(cd => ({ baseCooldown: cd, endTime: null }))
+    }));
+  }
+  render();
+}
+
+function handleLanguageChange(e) {
+  const lang = e.target.dataset.lang;
+  if (lang && lang !== state.currentLanguage) {
+    state.currentLanguage = lang;
+    render();
+  }
+}
+
+// --- DOM Generation ---
+function createProfiles() {
+  const container = document.getElementById('profiles');
+  container.innerHTML = '';
+
+  state.profiles.forEach((profile, profileIndex) => {
+    const col = document.createElement('div');
+    col.className = 'profile';
+    col.dataset.index = profileIndex;
+
+    const label = document.createElement('div');
+    label.className = 'profile-label';
+    label.textContent = PROFILE_LABELS[state.currentLanguage][profileIndex];
+    col.appendChild(label);
+
+    // Toggles
+    const togglesDiv = document.createElement('div');
+    togglesDiv.className = 'toggles';
+
+    ['cosmicInsight', 'ionianBoots'].forEach(type => {
+      const lbl = document.createElement('label');
+      lbl.className = 'toggle';
+
+      const input = document.createElement('input');
+      input.type = 'checkbox';
+      input.className = 'toggle-input';
+      input.dataset.type = type;
+      input.dataset.profile = profileIndex;
+      input.checked = profile[type];
+      input.addEventListener('change', handleToggle);
+
+      const box = document.createElement('span');
+      box.className = 'toggle-box';
+
+      const text = document.createElement('span');
+      text.className = 'toggle-label';
+      text.textContent = I18N[state.currentLanguage][type];
+
+      lbl.appendChild(input);
+      lbl.appendChild(box);
+      lbl.appendChild(text);
+      togglesDiv.appendChild(lbl);
+    });
+
+    col.appendChild(togglesDiv);
+
+    // Spells
+    const spellsDiv = document.createElement('div');
+    spellsDiv.className = 'spells';
+    const elapsed = getElapsedSeconds();
+    const i18n = I18N[state.currentLanguage];
+
+    profile.spells.forEach((spell, spellIndex) => {
+      const isOnCooldown = spell.endTime !== null && spell.endTime > elapsed;
+
+      if (isOnCooldown) {
+        const cdDiv = document.createElement('div');
+        cdDiv.className = 'spell-cd';
+        cdDiv.dataset.profile = profileIndex;
+        cdDiv.dataset.spell = spellIndex;
+        cdDiv.addEventListener('click', handleSpellClick);
+
+        const remaining = spell.endTime - elapsed;
+
+        const row1 = document.createElement('div');
+        row1.className = 'cd-row';
+
+        const lbl1 = document.createElement('span');
+        lbl1.className = 'cd-label';
+        lbl1.textContent = i18n.cdLabel;
+        const time1 = document.createElement('span');
+        time1.className = 'cd-time cd-remaining';
+        time1.textContent = formatTime(Math.max(0, remaining));
+        row1.appendChild(lbl1);
+        row1.appendChild(time1);
+
+        const row2 = document.createElement('div');
+        row2.className = 'cd-row';
+
+        const lbl2 = document.createElement('span');
+        lbl2.className = 'cd-label';
+        lbl2.textContent = i18n.etaLabel;
+        const time2 = document.createElement('span');
+        time2.className = 'cd-time cd-eta';
+        time2.textContent = formatTime(spell.endTime);
+        row2.appendChild(lbl2);
+        row2.appendChild(time2);
+
+        cdDiv.appendChild(row1);
+        cdDiv.appendChild(row2);
+        spellsDiv.appendChild(cdDiv);
+      } else {
+        const btn = document.createElement('button');
+        btn.className = 'spell-btn' + (spellIndex === 2 ? ' flash' : '');
+        btn.dataset.profile = profileIndex;
+        btn.dataset.spell = spellIndex;
+        btn.disabled = state.gameStartTime === null;
+        btn.textContent = i18n.spells[spellIndex];
+        btn.addEventListener('click', handleSpellClick);
+        spellsDiv.appendChild(btn);
+      }
+    });
+
+    col.appendChild(spellsDiv);
+    container.appendChild(col);
+  });
+}
+
+// --- Render ---
+function render() {
+  cleanupExpiredCooldowns();
+
+  document.getElementById('game-timer').textContent = formatTime(getElapsedSeconds());
+
+  const gameBtn = document.getElementById('game-btn');
+  const i18n = I18N[state.currentLanguage];
+  gameBtn.textContent = state.gameStartTime === null ? i18n.gameStart : i18n.gameEnd;
+
+  document.getElementById('title').textContent = i18n.title;
+
+  document.querySelectorAll('.lang-btn').forEach(btn => {
+    btn.classList.toggle('active', btn.dataset.lang === state.currentLanguage);
+  });
+
+  createProfiles();
+}
+
+// --- Init ---
+document.getElementById('game-btn').addEventListener('click', handleGameButton);
+document.querySelectorAll('.lang-btn').forEach(btn => {
+  btn.addEventListener('click', handleLanguageChange);
+});
+render();
   </script>
 </body>
 </html>
