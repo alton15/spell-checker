@@ -60,6 +60,7 @@ body {
 #profiles {
   display: flex;
   flex: 1;
+  align-items: center;
 }
 
 .profile {
@@ -298,7 +299,7 @@ function handleToggle(e) {
 
   state.profiles[profileIndex] = {
     ...profile,
-    [type]: e.target.checked,
+    [type]: !profile[type],
     spells: profile.spells.map(s => ({ ...s }))
   };
 
