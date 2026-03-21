@@ -220,6 +220,61 @@ body {
     <button class="lang-btn" data-lang="en">EN</button>
     <button class="lang-btn active" data-lang="kr">KR</button>
   </footer>
-  <script>/* Tasks 3-6 */</script>
+  <script>
+// --- Constants ---
+const HASTE = { cosmicInsight: 18, ionianBoots: 10 };
+const BASE_COOLDOWNS = [180, 240, 300];
+const PROFILE_LABELS = {
+  kr: ['탑', '정글', '미드', '원딜', '서폿'],
+  en: ['Top', 'JG', 'Mid', 'AD', 'Sup']
+};
+const I18N = {
+  kr: {
+    gameStart: '게임 시작', gameEnd: '게임 종료',
+    title: '⚔ 스펠 체커',
+    cosmicInsight: '우통', ionianBoots: '쿨감신',
+    spells: ['180초', '240초', '점멸'],
+    cdLabel: '쿨', etaLabel: '활성'
+  },
+  en: {
+    gameStart: 'Start', gameEnd: 'End',
+    title: '⚔ Spell Checker',
+    cosmicInsight: 'Insight', ionianBoots: 'Lucidity',
+    spells: ['180s', '240s', 'Flash'],
+    cdLabel: 'CD', etaLabel: 'ETA'
+  }
+};
+
+// --- State ---
+const state = {
+  gameStartTime: null,
+  currentLanguage: 'kr',
+  timerInterval: null,
+  profiles: Array.from({ length: 5 }, () => ({
+    cosmicInsight: false,
+    ionianBoots: false,
+    spells: BASE_COOLDOWNS.map(cd => ({ baseCooldown: cd, endTime: null }))
+  }))
+};
+
+// --- Cooldown Calculation ---
+function calculateCooldown(baseCooldown, cosmicInsight, ionianBoots) {
+  let haste = 0;
+  if (cosmicInsight) haste += HASTE.cosmicInsight;
+  if (ionianBoots) haste += HASTE.ionianBoots;
+  return Math.floor(baseCooldown * (100 / (100 + haste)));
+}
+
+function getElapsedSeconds() {
+  if (state.gameStartTime === null) return 0;
+  return Math.floor((Date.now() - state.gameStartTime) / 1000);
+}
+
+function formatTime(totalSeconds) {
+  const minutes = Math.floor(totalSeconds / 60);
+  const seconds = totalSeconds % 60;
+  return String(minutes).padStart(2, '0') + ':' + String(seconds).padStart(2, '0');
+}
+  </script>
 </body>
 </html>
