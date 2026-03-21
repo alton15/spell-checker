@@ -4,7 +4,206 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>LoL Spell Checker</title>
-  <style>/* Task 2 */</style>
+  <style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  background: #1a1a2e;
+  color: #e0e0e0;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+#header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 24px;
+  background: #16213e;
+  border-bottom: 2px solid #0f3460;
+}
+
+.header-left {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+#game-btn {
+  padding: 10px 24px;
+  background: #e94560;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 16px;
+  font-weight: bold;
+}
+
+#game-btn:hover { opacity: 0.9; }
+
+#game-timer {
+  font-size: 32px;
+  font-weight: bold;
+  font-family: monospace;
+  color: #fff;
+}
+
+.header-right {
+  font-size: 20px;
+  font-weight: bold;
+  color: #e94560;
+}
+
+#profiles {
+  display: flex;
+  flex: 1;
+}
+
+.profile {
+  flex: 1;
+  padding: 16px 12px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  border-right: 1px solid #0f3460;
+}
+
+.profile:last-child { border-right: none; }
+
+.profile-label {
+  font-size: 18px;
+  font-weight: bold;
+  color: #e94560;
+}
+
+.toggles {
+  display: flex;
+  gap: 10px;
+}
+
+.toggle {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  font-size: 13px;
+  color: #aaa;
+  cursor: pointer;
+}
+
+.toggle-input { display: none; }
+
+.toggle-box {
+  display: inline-block;
+  width: 20px;
+  height: 20px;
+  border: 2px solid #555;
+  border-radius: 4px;
+  background: transparent;
+  transition: all 0.15s;
+}
+
+.toggle-input:checked + .toggle-box {
+  border-color: #e94560;
+  background: #e94560;
+}
+
+.spells {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  width: 100%;
+}
+
+.spell-btn {
+  background: #533483;
+  color: #fff;
+  border: none;
+  border-radius: 10px;
+  font-size: 18px;
+  font-weight: bold;
+  cursor: pointer;
+  width: 100%;
+  height: 72px;
+}
+
+.spell-btn:hover:not(:disabled) { opacity: 0.85; }
+.spell-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+.spell-btn.flash { background: #e94560; }
+
+.spell-cd {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: #2a1a3e;
+  border: 2px solid #ffd700;
+  border-radius: 10px;
+  width: 100%;
+  height: 72px;
+  gap: 2px;
+  cursor: pointer;
+}
+
+.spell-cd .cd-row {
+  display: flex;
+  align-items: baseline;
+  gap: 5px;
+}
+
+.spell-cd .cd-label {
+  font-size: 12px;
+  color: #aaa;
+  min-width: 24px;
+  text-align: right;
+}
+
+.spell-cd .cd-time {
+  font-size: 16px;
+  font-weight: bold;
+  font-family: monospace;
+  min-width: 42px;
+}
+
+.spell-cd .cd-remaining { color: #ffd700; }
+.spell-cd .cd-eta { color: #4fc3f7; }
+
+#footer {
+  display: flex;
+  justify-content: center;
+  padding: 12px;
+  background: #16213e;
+  border-top: 1px solid #0f3460;
+  gap: 8px;
+}
+
+.lang-btn {
+  padding: 6px 16px;
+  background: #16213e;
+  color: #555;
+  border: 1px solid #555;
+  border-radius: 6px;
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.lang-btn.active {
+  background: #e94560;
+  color: #fff;
+  border-color: #e94560;
+  font-weight: bold;
+}
+
+@media (max-width: 768px) {
+  #profiles { flex-direction: column; }
+  .profile { border-right: none; border-bottom: 1px solid #0f3460; }
+  .profile:last-child { border-bottom: none; }
+}
+  </style>
 </head>
 <body>
   <header id="header">
