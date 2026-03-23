@@ -384,8 +384,16 @@ function handleTimeAdjust(e) {
   const elapsed = getElapsedSeconds();
   const newElapsed = Math.max(0, elapsed + delta);
   const actualDelta = newElapsed - elapsed;
-  // Shift gameStartTime: subtracting delta from startTime increases elapsed
+  if (actualDelta === 0) return;
   state.gameStartTime = state.gameStartTime - actualDelta * 1000;
+  state.profiles = state.profiles.map(profile => ({
+    ...profile,
+    spells: profile.spells.map(spell =>
+      spell.endTime !== null
+        ? { ...spell, endTime: spell.endTime + actualDelta }
+        : spell
+    )
+  }));
   render();
 }
 
