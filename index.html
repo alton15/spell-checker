@@ -44,6 +44,26 @@ body {
 
 #game-btn:hover { opacity: 0.9; }
 
+.time-controls {
+  display: flex;
+  gap: 4px;
+}
+
+.time-adj-btn {
+  padding: 6px 10px;
+  background: #0f3460;
+  color: #aaa;
+  border: 1px solid #555;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: bold;
+  font-family: monospace;
+}
+
+.time-adj-btn:hover:not(:disabled) { background: #1a4a8a; color: #fff; }
+.time-adj-btn:disabled { opacity: 0.3; cursor: not-allowed; }
+
 #game-timer {
   font-size: 32px;
   font-weight: bold;
@@ -210,6 +230,12 @@ body {
   <header id="header">
     <div class="header-left">
       <button id="game-btn" data-kr="게임 시작" data-en="Start">게임 시작</button>
+      <div class="time-controls">
+        <button class="time-adj-btn" data-delta="-5" disabled>-5s</button>
+        <button class="time-adj-btn" data-delta="-1" disabled>-1s</button>
+        <button class="time-adj-btn" data-delta="1" disabled>+1s</button>
+        <button class="time-adj-btn" data-delta="5" disabled>+5s</button>
+      </div>
       <span id="game-timer">00:00</span>
     </div>
     <div class="header-right">
@@ -352,6 +378,17 @@ function handleGameButton() {
   render();
 }
 
+function handleTimeAdjust(e) {
+  if (state.gameStartTime === null) return;
+  const delta = Number(e.target.dataset.delta);
+  const elapsed = getElapsedSeconds();
+  const newElapsed = Math.max(0, elapsed + delta);
+  const actualDelta = newElapsed - elapsed;
+  // Shift gameStartTime: subtracting delta from startTime increases elapsed
+  state.gameStartTime = state.gameStartTime - actualDelta * 1000;
+  render();
+}
+
 function handleLanguageChange(e) {
   const lang = e.target.dataset.lang;
   if (lang && lang !== state.currentLanguage) {
@@ -484,11 +521,19 @@ function render() {
     btn.classList.toggle('active', btn.dataset.lang === state.currentLanguage);
   });
 
+  const gameRunning = state.gameStartTime !== null;
+  document.querySelectorAll('.time-adj-btn').forEach(btn => {
+    btn.disabled = !gameRunning;
+  });
+
   createProfiles();
 }
 
 // --- Init ---
 document.getElementById('game-btn').addEventListener('click', handleGameButton);
+document.querySelectorAll('.time-adj-btn').forEach(btn => {
+  btn.addEventListener('click', handleTimeAdjust);
+});
 document.querySelectorAll('.lang-btn').forEach(btn => {
   btn.addEventListener('click', handleLanguageChange);
 });
