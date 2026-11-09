@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>LoL Summoner Spell Timer - Flash Cooldown Tracker | LoL Spell Checker</title>
+  <meta name="description" content="Track enemy Flash, Teleport and Ignite cooldowns in League of Legends with one tap. Cosmic Insight and Ionian Boots of Lucidity haste applied automatically, plus a full cooldown table. Free, no install.">
+  <link rel="canonical" href="https://spell.kkg-dev.com/en/">
+  <link rel="alternate" hreflang="ko" href="https://spell.kkg-dev.com/">
+  <link rel="alternate" hreflang="en" href="https://spell.kkg-dev.com/en/">
+  <link rel="alternate" hreflang="x-default" href="https://spell.kkg-dev.com/">
+  <meta name="theme-color" content="#16213e">
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+  <link rel="icon" href="/favicon.ico" sizes="48x48">
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="LoL Spell Checker">
+  <meta property="og:title" content="LoL Summoner Spell Timer - Flash Cooldown Tracker">
+  <meta property="og:description" content="Track enemy Flash, Teleport and Ignite with one tap. Cosmic Insight and Lucidity haste included. Free, no install.">
+  <meta property="og:url" content="https://spell.kkg-dev.com/en/">
+  <meta property="og:image" content="https://spell.kkg-dev.com/og-image.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:locale" content="en_US">
+  <meta property="og:locale:alternate" content="ko_KR">
+  <meta name="twitter:card" content="summary_large_image">
+  <link rel="preconnect" href="https://ddragon.leagueoflegends.com">
+  <link rel="stylesheet" href="/css/style.css">
+  <script type="module" src="/js/app.js"></script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    "name": "LoL Spell Checker",
+    "url": "https://spell.kkg-dev.com/en/",
+    "description": "League of Legends enemy summoner spell cooldown timer with Cosmic Insight and Ionian Boots of Lucidity haste.",
+    "applicationCategory": "GameApplication",
+    "operatingSystem": "Any",
+    "inLanguage": ["en", "ko"],
+    "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" }
+  }
+  </script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": [
+      { "@type": "Question", "name": "What is Flash's cooldown in League of Legends?",
+        "acceptedAnswer": { "@type": "Answer", "text": "300 seconds (5 minutes). 254s with Cosmic Insight, 234s with Cosmic Insight and Ionian Boots of Lucidity, 217s with Cosmic Insight and Crimson Lucidity." } },
+      { "@type": "Question", "name": "How much does Cosmic Insight reduce summoner spell cooldowns?",
+        "acceptedAnswer": { "@type": "Answer", "text": "It grants 18 summoner spell haste, about a 15% reduction. Flash goes from 300s to 254s." } },
+      { "@type": "Question", "name": "How much summoner spell haste do Lucidity boots give?",
+        "acceptedAnswer": { "@type": "Answer", "text": "Ionian Boots of Lucidity give 10 summoner spell haste. The Crimson Lucidity upgrade gives 20." } }
+    ]
+  }
+  </script>
+</head>
+<body>
+  <header id="header">
+    <div class="header-left">
+      <button id="game-btn" type="button">Start</button>
+      <div class="time-controls" role="group" aria-label="Adjust game time">
+        <button type="button" class="time-adj-btn" data-delta="-5" aria-label="Minus 5 seconds" disabled>-5s</button>
+        <button type="button" class="time-adj-btn" data-delta="-1" aria-label="Minus 1 second" disabled>-1s</button>
+        <button type="button" class="time-adj-btn" data-delta="1" aria-label="Plus 1 second" disabled>+1s</button>
+        <button type="button" class="time-adj-btn" data-delta="5" aria-label="Plus 5 seconds" disabled>+5s</button>
+      </div>
+      <div class="timer-wrap">
+        <button id="game-timer" type="button" aria-describedby="timer-hint">00:00</button>
+        <form id="timer-form" hidden>
+          <label class="visually-hidden" for="timer-input">In-game time (minutes:seconds)</label>
+          <input id="timer-input" inputmode="numeric" autocomplete="off" placeholder="12:34" maxlength="5">
+          <span id="timer-error" role="alert"></span>
+        </form>
+      </div>
+      <span class="timer-hint" id="timer-hint">Tap the clock to enter the in-game time</span>
+    </div>
+    <div class="header-right">
+      <button id="sound-btn" type="button" aria-pressed="true" aria-label="Sound on">🔔</button>
+      <span class="site-title">⚔ Spell Checker</span>
+    </div>
+  </header>
+
+  <main>
+    <div id="profiles"></div>
+    <p id="announcer" class="visually-hidden" aria-live="polite"></p>
+
+    <article class="guide" id="guide">
+      <h1>LoL Summoner Spell Timer — Flash Cooldown Tracker</h1>
+      <p>Tap an enemy's <strong>Flash, Teleport or Ignite</strong> when they use it. You get the time remaining and the game time it comes back. Summoner spell haste from <strong>Cosmic Insight</strong>, <strong>Ionian Boots of Lucidity</strong> and <strong>Crimson Lucidity</strong> is applied automatically. No install, no login: keep it on a second monitor or your phone.</p>
+
+      <h2>How to use</h2>
+      <ol>
+        <li>Press <strong>Start</strong> when the game starts. Opened it late? Tap the clock (00:00) and type the in-game time (<code>12:34</code> or <code>1234</code>) to start from there.</li>
+        <li>Use the <strong>⇄</strong> button on each spell to pick what the enemy is running.</li>
+        <li>Turn on <strong>Insight</strong> and the boots button when they have Cosmic Insight or Lucidity boots. The boots button cycles none → Lucidity (+10) → Crimson (+20).</li>
+        <li>Tap a spell when the enemy uses it. <strong>CD</strong> shows the time remaining and <strong>ETA</strong> the game time it's back. It pulses for the last 10 seconds and plays a chime (and vibrates on phones) when it's up.</li>
+        <li>A running game survives page reloads.</li>
+      </ol>
+
+      <h2>Summoner spell cooldown table (with Cosmic Insight and Lucidity)</h2>
+      <div class="table-wrap">
+        <table class="cd-table">
+          <caption class="visually-hidden">Cooldowns by summoner spell haste</caption>
+          <thead>
+            <tr><th scope="col">Spell</th><th scope="col">Base</th><th scope="col">Lucidity<br>+10</th><th scope="col">Insight<br>+18</th><th scope="col">Crimson<br>+20</th><th scope="col">Insight+Lucidity<br>+28</th><th scope="col">Insight+Crimson<br>+38</th></tr>
+          </thead>
+          <tbody>
+              <tr data-spell="flash"><th scope="row">Flash</th><td data-base="300" data-haste="0">5:00<small>300s</small></td><td data-base="300" data-haste="10">4:33<small>273s</small></td><td data-base="300" data-haste="18">4:14<small>254s</small></td><td data-base="300" data-haste="20">4:10<small>250s</small></td><td data-base="300" data-haste="28">3:54<small>234s</small></td><td data-base="300" data-haste="38">3:37<small>217s</small></td></tr>
+              <tr data-spell="teleport"><th scope="row">Teleport</th><td data-base="300" data-haste="0">5:00<small>300s</small></td><td data-base="300" data-haste="10">4:33<small>273s</small></td><td data-base="300" data-haste="18">4:14<small>254s</small></td><td data-base="300" data-haste="20">4:10<small>250s</small></td><td data-base="300" data-haste="28">3:54<small>234s</small></td><td data-base="300" data-haste="38">3:37<small>217s</small></td></tr>
+              <tr data-spell="ignite"><th scope="row">Ignite</th><td data-base="180" data-haste="0">3:00<small>180s</small></td><td data-base="180" data-haste="10">2:44<small>164s</small></td><td data-base="180" data-haste="18">2:33<small>153s</small></td><td data-base="180" data-haste="20">2:30<small>150s</small></td><td data-base="180" data-haste="28">2:21<small>141s</small></td><td data-base="180" data-haste="38">2:10<small>130s</small></td></tr>
+              <tr data-spell="barrier"><th scope="row">Barrier</th><td data-base="180" data-haste="0">3:00<small>180s</small></td><td data-base="180" data-haste="10">2:44<small>164s</small></td><td data-base="180" data-haste="18">2:33<small>153s</small></td><td data-base="180" data-haste="20">2:30<small>150s</small></td><td data-base="180" data-haste="28">2:21<small>141s</small></td><td data-base="180" data-haste="38">2:10<small>130s</small></td></tr>
+              <tr data-spell="exhaust"><th scope="row">Exhaust</th><td data-base="240" data-haste="0">4:00<small>240s</small></td><td data-base="240" data-haste="10">3:38<small>218s</small></td><td data-base="240" data-haste="18">3:23<small>203s</small></td><td data-base="240" data-haste="20">3:20<small>200s</small></td><td data-base="240" data-haste="28">3:08<small>188s</small></td><td data-base="240" data-haste="38">2:54<small>174s</small></td></tr>
+              <tr data-spell="ghost"><th scope="row">Ghost</th><td data-base="240" data-haste="0">4:00<small>240s</small></td><td data-base="240" data-haste="10">3:38<small>218s</small></td><td data-base="240" data-haste="18">3:23<small>203s</small></td><td data-base="240" data-haste="20">3:20<small>200s</small></td><td data-base="240" data-haste="28">3:08<small>188s</small></td><td data-base="240" data-haste="38">2:54<small>174s</small></td></tr>
+              <tr data-spell="heal"><th scope="row">Heal</th><td data-base="240" data-haste="0">4:00<small>240s</small></td><td data-base="240" data-haste="10">3:38<small>218s</small></td><td data-base="240" data-haste="18">3:23<small>203s</small></td><td data-base="240" data-haste="20">3:20<small>200s</small></td><td data-base="240" data-haste="28">3:08<small>188s</small></td><td data-base="240" data-haste="38">2:54<small>174s</small></td></tr>
+              <tr data-spell="cleanse"><th scope="row">Cleanse</th><td data-base="240" data-haste="0">4:00<small>240s</small></td><td data-base="240" data-haste="10">3:38<small>218s</small></td><td data-base="240" data-haste="18">3:23<small>203s</small></td><td data-base="240" data-haste="20">3:20<small>200s</small></td><td data-base="240" data-haste="28">3:08<small>188s</small></td><td data-base="240" data-haste="38">2:54<small>174s</small></td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="table-note">Cooldown = base × 100 ÷ (100 + summoner spell haste), rounded to the second. After 10:00 Teleport becomes Unleashed Teleport with a 330–240s cooldown based on level. Smite uses charges, so it isn't tracked. Values as of the November 2026 patch (Data Dragon 16.22).</p>
+
+      <h2>FAQ</h2>
+      <dl>
+        <dt>What is Flash's cooldown in League of Legends?</dt>
+        <dd>300 seconds (5 minutes). 254s with Cosmic Insight, 234s with Cosmic Insight and Ionian Boots of Lucidity, 217s with Cosmic Insight and Crimson Lucidity.</dd>
+        <dt>How much does Cosmic Insight reduce summoner spell cooldowns?</dt>
+        <dd>It grants 18 summoner spell haste, about a 15% reduction. Flash goes from 300s to 254s.</dd>
+        <dt>How much summoner spell haste do Lucidity boots give?</dt>
+        <dd>Ionian Boots of Lucidity give 10 summoner spell haste. The Crimson Lucidity upgrade gives 20.</dd>
+        <dt>Does it touch the game client?</dt>
+        <dd>No. It's a browser timer that never reads or changes game data. You tap it yourself, like writing timers on a notepad.</dd>
+        <dt>Does it work on phones?</dt>
+        <dd>Yes. On small screens each role gets one row. Use "Add to Home Screen" in your browser to open it like an app.</dd>
+      </dl>
+    </article>
+  </main>
+
+  <dialog id="spell-picker"></dialog>
+
+  <footer id="footer">
+    <nav class="lang-links" aria-label="Language">
+      <a class="lang-link" href="/en/" hreflang="en" aria-current="page">EN</a>
+      <a class="lang-link" href="/" hreflang="ko" lang="ko">KR</a>
+    </nav>
+    <p class="legal">LoL Spell Checker isn't endorsed by Riot Games and doesn't reflect the views or opinions of Riot Games or anyone officially involved in producing or managing Riot Games properties. Riot Games, and all associated properties are trademarks or registered trademarks of Riot Games, Inc.</p>
+  </footer>
+</body>
+</html>

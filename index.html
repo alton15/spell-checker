@@ -3,549 +3,146 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>LoL Spell Checker</title>
-  <style>
-* { margin: 0; padding: 0; box-sizing: border-box; }
-
-body {
-  background: #1a1a2e;
-  color: #e0e0e0;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-}
-
-#header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 16px 24px;
-  background: #16213e;
-  border-bottom: 2px solid #0f3460;
-}
-
-.header-left {
-  display: flex;
-  align-items: center;
-  gap: 16px;
-}
-
-#game-btn {
-  padding: 10px 24px;
-  background: #e94560;
-  color: #fff;
-  border: none;
-  border-radius: 8px;
-  cursor: pointer;
-  font-size: 16px;
-  font-weight: bold;
-}
-
-#game-btn:hover { opacity: 0.9; }
-
-.time-controls {
-  display: flex;
-  gap: 4px;
-}
-
-.time-adj-btn {
-  padding: 6px 10px;
-  background: #0f3460;
-  color: #aaa;
-  border: 1px solid #555;
-  border-radius: 6px;
-  cursor: pointer;
-  font-size: 13px;
-  font-weight: bold;
-  font-family: monospace;
-}
-
-.time-adj-btn:hover:not(:disabled) { background: #1a4a8a; color: #fff; }
-.time-adj-btn:disabled { opacity: 0.3; cursor: not-allowed; }
-
-#game-timer {
-  font-size: 32px;
-  font-weight: bold;
-  font-family: monospace;
-  color: #fff;
-}
-
-.header-right {
-  font-size: 20px;
-  font-weight: bold;
-  color: #e94560;
-}
-
-#profiles {
-  display: flex;
-  flex: 1;
-  align-items: center;
-}
-
-.profile {
-  flex: 1;
-  padding: 16px 12px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 12px;
-  border-right: 1px solid #0f3460;
-}
-
-.profile:last-child { border-right: none; }
-
-.profile-label {
-  font-size: 18px;
-  font-weight: bold;
-  color: #e94560;
-}
-
-.toggles {
-  display: flex;
-  gap: 10px;
-}
-
-.toggle {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 4px;
-  font-size: 13px;
-  color: #aaa;
-  cursor: pointer;
-}
-
-.toggle-input { display: none; }
-
-.toggle-box {
-  display: inline-block;
-  width: 20px;
-  height: 20px;
-  border: 2px solid #555;
-  border-radius: 4px;
-  background: transparent;
-  transition: all 0.15s;
-}
-
-.toggle-input:checked + .toggle-box {
-  border-color: #e94560;
-  background: #e94560;
-}
-
-.spells {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  width: 100%;
-}
-
-.spell-btn {
-  background: #533483;
-  color: #fff;
-  border: none;
-  border-radius: 10px;
-  font-size: 18px;
-  font-weight: bold;
-  cursor: pointer;
-  width: 100%;
-  height: 72px;
-}
-
-.spell-btn:hover:not(:disabled) { opacity: 0.85; }
-.spell-btn:disabled { opacity: 0.4; cursor: not-allowed; }
-.spell-btn.flash { background: #e94560; }
-
-.spell-cd {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  background: #2a1a3e;
-  border: 2px solid #ffd700;
-  border-radius: 10px;
-  width: 100%;
-  height: 72px;
-  gap: 2px;
-  cursor: pointer;
-}
-
-.spell-cd .cd-row {
-  display: flex;
-  align-items: baseline;
-  gap: 5px;
-}
-
-.spell-cd .cd-label {
-  font-size: 12px;
-  color: #aaa;
-  min-width: 24px;
-  text-align: right;
-}
-
-.spell-cd .cd-time {
-  font-size: 16px;
-  font-weight: bold;
-  font-family: monospace;
-  min-width: 42px;
-}
-
-.spell-cd .cd-remaining { color: #ffd700; }
-.spell-cd .cd-eta { color: #4fc3f7; }
-
-#footer {
-  display: flex;
-  justify-content: center;
-  padding: 12px;
-  background: #16213e;
-  border-top: 1px solid #0f3460;
-  gap: 8px;
-}
-
-.lang-btn {
-  padding: 6px 16px;
-  background: #16213e;
-  color: #555;
-  border: 1px solid #555;
-  border-radius: 6px;
-  font-size: 13px;
-  cursor: pointer;
-}
-
-.lang-btn.active {
-  background: #e94560;
-  color: #fff;
-  border-color: #e94560;
-  font-weight: bold;
-}
-
-@media (max-width: 768px) {
-  #profiles { flex-direction: column; }
-  .profile { border-right: none; border-bottom: 1px solid #0f3460; }
-  .profile:last-child { border-bottom: none; }
-}
-  </style>
+  <title>롤 스펠 체크 - 소환사 주문 쿨타임 타이머 (점멸·우통·쿨감신) | LoL Spell Checker</title>
+  <meta name="description" content="롤 상대 스펠 쿨타임을 클릭 한 번으로 체크하세요. 점멸·순간이동·점화 타이머와 우주적 통찰력(우통)·명석함의 아이오니아 장화(쿨감신) 적용 쿨타임 표. 설치 없이 PC·모바일에서 무료.">
+  <link rel="canonical" href="https://spell.kkg-dev.com/">
+  <link rel="alternate" hreflang="ko" href="https://spell.kkg-dev.com/">
+  <link rel="alternate" hreflang="en" href="https://spell.kkg-dev.com/en/">
+  <link rel="alternate" hreflang="x-default" href="https://spell.kkg-dev.com/">
+  <meta name="theme-color" content="#16213e">
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+  <link rel="icon" href="/favicon.ico" sizes="48x48">
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="LoL Spell Checker">
+  <meta property="og:title" content="롤 스펠 체크 - 소환사 주문 쿨타임 타이머">
+  <meta property="og:description" content="상대 점멸·순간이동·점화 쿨을 클릭 한 번으로 체크. 우통·쿨감신 자동 계산, 설치 없이 무료.">
+  <meta property="og:url" content="https://spell.kkg-dev.com/">
+  <meta property="og:image" content="https://spell.kkg-dev.com/og-image.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:locale" content="ko_KR">
+  <meta property="og:locale:alternate" content="en_US">
+  <meta name="twitter:card" content="summary_large_image">
+  <link rel="preconnect" href="https://ddragon.leagueoflegends.com">
+  <link rel="stylesheet" href="/css/style.css">
+  <script type="module" src="/js/app.js"></script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    "name": "LoL Spell Checker (롤 스펠 체크)",
+    "url": "https://spell.kkg-dev.com/",
+    "description": "리그 오브 레전드 상대 소환사 주문 쿨타임 타이머. 우주적 통찰력·명석함의 아이오니아 장화 소환사 주문 가속 자동 계산.",
+    "applicationCategory": "GameApplication",
+    "operatingSystem": "Any",
+    "inLanguage": ["ko", "en"],
+    "offers": { "@type": "Offer", "price": "0", "priceCurrency": "KRW" }
+  }
+  </script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": [
+      { "@type": "Question", "name": "롤 점멸 쿨타임은 몇 초인가요?",
+        "acceptedAnswer": { "@type": "Answer", "text": "기본 300초(5분)입니다. 우주적 통찰력 254초, 우통+명석함의 아이오니아 장화 234초, 우통+핏빛 명석함 217초입니다." } },
+      { "@type": "Question", "name": "우통(우주적 통찰력)은 스펠 쿨을 얼마나 줄이나요?",
+        "acceptedAnswer": { "@type": "Answer", "text": "소환사 주문 가속 18을 줍니다. 쿨타임이 약 15% 줄어 점멸은 300초에서 254초가 됩니다." } },
+      { "@type": "Question", "name": "쿨감신(명석함의 아이오니아 장화)의 소환사 주문 가속은 얼마인가요?",
+        "acceptedAnswer": { "@type": "Answer", "text": "명석함의 아이오니아 장화는 소환사 주문 가속 10, 업그레이드한 핏빛 명석함은 20입니다." } }
+    ]
+  }
+  </script>
 </head>
 <body>
   <header id="header">
     <div class="header-left">
-      <button id="game-btn" data-kr="게임 시작" data-en="Start">게임 시작</button>
-      <div class="time-controls">
-        <button class="time-adj-btn" data-delta="-5" disabled>-5s</button>
-        <button class="time-adj-btn" data-delta="-1" disabled>-1s</button>
-        <button class="time-adj-btn" data-delta="1" disabled>+1s</button>
-        <button class="time-adj-btn" data-delta="5" disabled>+5s</button>
+      <button id="game-btn" type="button">게임 시작</button>
+      <div class="time-controls" role="group" aria-label="게임 시간 조정">
+        <button type="button" class="time-adj-btn" data-delta="-5" aria-label="5초 빼기" disabled>-5s</button>
+        <button type="button" class="time-adj-btn" data-delta="-1" aria-label="1초 빼기" disabled>-1s</button>
+        <button type="button" class="time-adj-btn" data-delta="1" aria-label="1초 더하기" disabled>+1s</button>
+        <button type="button" class="time-adj-btn" data-delta="5" aria-label="5초 더하기" disabled>+5s</button>
       </div>
-      <span id="game-timer">00:00</span>
+      <div class="timer-wrap">
+        <button id="game-timer" type="button" aria-describedby="timer-hint">00:00</button>
+        <form id="timer-form" hidden>
+          <label class="visually-hidden" for="timer-input">인게임 시간 (분:초)</label>
+          <input id="timer-input" inputmode="numeric" autocomplete="off" placeholder="12:34" maxlength="5">
+          <span id="timer-error" role="alert"></span>
+        </form>
+      </div>
+      <span class="timer-hint" id="timer-hint">시간을 눌러 인게임 시간 입력</span>
     </div>
     <div class="header-right">
-      <span id="title" data-kr="⚔ 스펠 체커" data-en="⚔ Spell Checker">⚔ 스펠 체커</span>
+      <button id="sound-btn" type="button" aria-pressed="true" aria-label="알림음 켜짐">🔔</button>
+      <span class="site-title">⚔ 스펠 체커</span>
     </div>
   </header>
-  <main id="profiles"></main>
+
+  <main>
+    <div id="profiles"></div>
+    <p id="announcer" class="visually-hidden" aria-live="polite"></p>
+
+    <article class="guide" id="guide">
+      <h1>롤 스펠 체크 — 소환사 주문 쿨타임 타이머</h1>
+      <p>상대가 <strong>점멸·순간이동·점화</strong>를 쓰면 눌러 두세요. 남은 쿨타임과 스펠이 돌아오는 게임 시간을 바로 보여 줍니다. <strong>우주적 통찰력(우통)</strong>, <strong>명석함의 아이오니아 장화(쿨감신)</strong>, <strong>핏빛 명석함</strong>의 소환사 주문 가속도 자동으로 계산합니다. 설치나 로그인 없이 PC 세컨 모니터나 휴대폰에서 바로 쓸 수 있습니다.</p>
+
+      <h2>사용법</h2>
+      <ol>
+        <li>게임이 시작되면 <strong>게임 시작</strong>을 누르세요. 늦게 켰다면 상단 타이머(00:00)를 눌러 인게임 시간(예: <code>12:34</code> 또는 <code>1234</code>)을 입력하면 그 시간부터 시작합니다.</li>
+        <li>스펠 오른쪽 위의 <strong>⇄</strong> 버튼으로 상대가 든 스펠을 고르세요.</li>
+        <li>상대가 우통 룬을 들었거나 명석함 신발을 샀다면 <strong>우통</strong>·신발 버튼을 켜세요. 신발 버튼은 누를 때마다 없음 → 쿨감신(+10) → 핏빛(+20)으로 바뀝니다.</li>
+        <li>상대가 스펠을 쓰면 해당 스펠을 누르세요. <strong>쿨</strong>(남은 시간)과 <strong>활성</strong>(돌아오는 게임 시간)이 표시됩니다. 10초 전부터 깜빡이고, 돌아오면 알림음과 진동으로 알려 줍니다.</li>
+        <li>새로고침하거나 창을 닫았다 열어도 진행 중인 게임 기록은 유지됩니다.</li>
+      </ol>
+
+      <h2>소환사 주문 쿨타임 표 (우통·쿨감신 적용)</h2>
+      <div class="table-wrap">
+        <table class="cd-table">
+          <caption class="visually-hidden">소환사 주문 가속 조합별 쿨타임</caption>
+          <thead>
+            <tr><th scope="col">스펠</th><th scope="col">기본</th><th scope="col">쿨감신<br>+10</th><th scope="col">우통<br>+18</th><th scope="col">핏빛 명석함<br>+20</th><th scope="col">우통+쿨감신<br>+28</th><th scope="col">우통+핏빛<br>+38</th></tr>
+          </thead>
+          <tbody>
+              <tr data-spell="flash"><th scope="row">점멸</th><td data-base="300" data-haste="0">5:00<small>300초</small></td><td data-base="300" data-haste="10">4:33<small>273초</small></td><td data-base="300" data-haste="18">4:14<small>254초</small></td><td data-base="300" data-haste="20">4:10<small>250초</small></td><td data-base="300" data-haste="28">3:54<small>234초</small></td><td data-base="300" data-haste="38">3:37<small>217초</small></td></tr>
+              <tr data-spell="teleport"><th scope="row">순간이동</th><td data-base="300" data-haste="0">5:00<small>300초</small></td><td data-base="300" data-haste="10">4:33<small>273초</small></td><td data-base="300" data-haste="18">4:14<small>254초</small></td><td data-base="300" data-haste="20">4:10<small>250초</small></td><td data-base="300" data-haste="28">3:54<small>234초</small></td><td data-base="300" data-haste="38">3:37<small>217초</small></td></tr>
+              <tr data-spell="ignite"><th scope="row">점화</th><td data-base="180" data-haste="0">3:00<small>180초</small></td><td data-base="180" data-haste="10">2:44<small>164초</small></td><td data-base="180" data-haste="18">2:33<small>153초</small></td><td data-base="180" data-haste="20">2:30<small>150초</small></td><td data-base="180" data-haste="28">2:21<small>141초</small></td><td data-base="180" data-haste="38">2:10<small>130초</small></td></tr>
+              <tr data-spell="barrier"><th scope="row">방어막</th><td data-base="180" data-haste="0">3:00<small>180초</small></td><td data-base="180" data-haste="10">2:44<small>164초</small></td><td data-base="180" data-haste="18">2:33<small>153초</small></td><td data-base="180" data-haste="20">2:30<small>150초</small></td><td data-base="180" data-haste="28">2:21<small>141초</small></td><td data-base="180" data-haste="38">2:10<small>130초</small></td></tr>
+              <tr data-spell="exhaust"><th scope="row">탈진</th><td data-base="240" data-haste="0">4:00<small>240초</small></td><td data-base="240" data-haste="10">3:38<small>218초</small></td><td data-base="240" data-haste="18">3:23<small>203초</small></td><td data-base="240" data-haste="20">3:20<small>200초</small></td><td data-base="240" data-haste="28">3:08<small>188초</small></td><td data-base="240" data-haste="38">2:54<small>174초</small></td></tr>
+              <tr data-spell="ghost"><th scope="row">유체화</th><td data-base="240" data-haste="0">4:00<small>240초</small></td><td data-base="240" data-haste="10">3:38<small>218초</small></td><td data-base="240" data-haste="18">3:23<small>203초</small></td><td data-base="240" data-haste="20">3:20<small>200초</small></td><td data-base="240" data-haste="28">3:08<small>188초</small></td><td data-base="240" data-haste="38">2:54<small>174초</small></td></tr>
+              <tr data-spell="heal"><th scope="row">회복</th><td data-base="240" data-haste="0">4:00<small>240초</small></td><td data-base="240" data-haste="10">3:38<small>218초</small></td><td data-base="240" data-haste="18">3:23<small>203초</small></td><td data-base="240" data-haste="20">3:20<small>200초</small></td><td data-base="240" data-haste="28">3:08<small>188초</small></td><td data-base="240" data-haste="38">2:54<small>174초</small></td></tr>
+              <tr data-spell="cleanse"><th scope="row">정화</th><td data-base="240" data-haste="0">4:00<small>240초</small></td><td data-base="240" data-haste="10">3:38<small>218초</small></td><td data-base="240" data-haste="18">3:23<small>203초</small></td><td data-base="240" data-haste="20">3:20<small>200초</small></td><td data-base="240" data-haste="28">3:08<small>188초</small></td><td data-base="240" data-haste="38">2:54<small>174초</small></td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="table-note">쿨타임 = 기본 쿨타임 × 100 ÷ (100 + 소환사 주문 가속), 초 단위 반올림. 순간이동은 10분 이후 강력해진 순간이동이 되어 레벨에 따라 330~240초로 바뀝니다. 강타는 충전식이라 표와 타이머에서 제외했습니다. 2026년 11월 패치(Data Dragon 16.22) 기준.</p>
+
+      <h2>자주 묻는 질문</h2>
+      <dl>
+        <dt>롤 점멸 쿨타임은 몇 초인가요?</dt>
+        <dd>기본 300초(5분)입니다. 우주적 통찰력 254초, 우통+명석함의 아이오니아 장화 234초, 우통+핏빛 명석함 217초입니다.</dd>
+        <dt>우통(우주적 통찰력)은 스펠 쿨을 얼마나 줄이나요?</dt>
+        <dd>소환사 주문 가속 18을 줍니다. 쿨타임이 약 15% 줄어 점멸은 300초에서 254초가 됩니다.</dd>
+        <dt>쿨감신(명석함의 아이오니아 장화)의 소환사 주문 가속은 얼마인가요?</dt>
+        <dd>명석함의 아이오니아 장화는 소환사 주문 가속 10, 업그레이드한 핏빛 명석함은 20입니다.</dd>
+        <dt>게임 클라이언트에 영향을 주나요?</dt>
+        <dd>아니요. 게임 데이터를 읽거나 수정하지 않는 브라우저 타이머입니다. 직접 눌러서 기록하는 방식이라 메모해 두는 것과 같습니다.</dd>
+        <dt>휴대폰에서도 쓸 수 있나요?</dt>
+        <dd>네. 모바일 화면에 맞게 한 줄에 한 라인씩 보입니다. 브라우저 메뉴의 ‘홈 화면에 추가’로 앱처럼 열 수 있습니다.</dd>
+      </dl>
+    </article>
+  </main>
+
+  <dialog id="spell-picker"></dialog>
+
   <footer id="footer">
-    <button class="lang-btn" data-lang="en">EN</button>
-    <button class="lang-btn active" data-lang="kr">KR</button>
+    <nav class="lang-links" aria-label="언어 선택">
+      <a class="lang-link" href="/en/" hreflang="en" lang="en">EN</a>
+      <a class="lang-link" href="/" hreflang="ko" aria-current="page">KR</a>
+    </nav>
+    <p class="legal" lang="en">LoL Spell Checker isn't endorsed by Riot Games and doesn't reflect the views or opinions of Riot Games or anyone officially involved in producing or managing Riot Games properties. Riot Games, and all associated properties are trademarks or registered trademarks of Riot Games, Inc.</p>
   </footer>
-  <script>
-// --- Constants ---
-const HASTE = { cosmicInsight: 18, ionianBoots: 10 };
-const BASE_COOLDOWNS = [180, 240, 300];
-const PROFILE_LABELS = {
-  kr: ['탑', '정글', '미드', '원딜', '서폿'],
-  en: ['Top', 'JG', 'Mid', 'AD', 'Sup']
-};
-const I18N = {
-  kr: {
-    gameStart: '게임 시작', gameEnd: '게임 종료',
-    title: '⚔ 스펠 체커',
-    cosmicInsight: '우통', ionianBoots: '쿨감신',
-    spells: ['180초', '240초', '점멸'],
-    cdLabel: '쿨', etaLabel: '활성'
-  },
-  en: {
-    gameStart: 'Start', gameEnd: 'End',
-    title: '⚔ Spell Checker',
-    cosmicInsight: 'Insight', ionianBoots: 'Lucidity',
-    spells: ['180s', '240s', 'Flash'],
-    cdLabel: 'CD', etaLabel: 'ETA'
-  }
-};
-
-// --- State ---
-const state = {
-  gameStartTime: null,
-  currentLanguage: 'kr',
-  timerInterval: null,
-  profiles: Array.from({ length: 5 }, () => ({
-    cosmicInsight: false,
-    ionianBoots: false,
-    spells: BASE_COOLDOWNS.map(cd => ({ baseCooldown: cd, endTime: null }))
-  }))
-};
-
-// --- Cooldown Calculation ---
-function calculateCooldown(baseCooldown, cosmicInsight, ionianBoots) {
-  let haste = 0;
-  if (cosmicInsight) haste += HASTE.cosmicInsight;
-  if (ionianBoots) haste += HASTE.ionianBoots;
-  return Math.floor(baseCooldown * (100 / (100 + haste)));
-}
-
-function getElapsedSeconds() {
-  if (state.gameStartTime === null) return 0;
-  return Math.floor((Date.now() - state.gameStartTime) / 1000);
-}
-
-function formatTime(totalSeconds) {
-  const minutes = Math.floor(totalSeconds / 60);
-  const seconds = totalSeconds % 60;
-  return String(minutes).padStart(2, '0') + ':' + String(seconds).padStart(2, '0');
-}
-
-// --- State Cleanup ---
-function cleanupExpiredCooldowns() {
-  const elapsed = getElapsedSeconds();
-  state.profiles = state.profiles.map(profile => ({
-    ...profile,
-    spells: profile.spells.map(spell => {
-      if (spell.endTime !== null && spell.endTime <= elapsed) {
-        return { ...spell, endTime: null };
-      }
-      return spell;
-    })
-  }));
-}
-
-// --- Event Handlers ---
-function handleToggle(e) {
-  const profileIndex = Number(e.target.dataset.profile);
-  const type = e.target.dataset.type;
-  const profile = state.profiles[profileIndex];
-
-  state.profiles[profileIndex] = {
-    ...profile,
-    [type]: !profile[type],
-    spells: profile.spells.map(s => ({ ...s }))
-  };
-
-  render();
-}
-
-function handleSpellClick(e) {
-  const el = e.currentTarget;
-  const profileIndex = Number(el.dataset.profile);
-  const spellIndex = Number(el.dataset.spell);
-  const profile = state.profiles[profileIndex];
-  const spell = profile.spells[spellIndex];
-
-  const elapsed = getElapsedSeconds();
-  const cooldown = calculateCooldown(
-    spell.baseCooldown,
-    profile.cosmicInsight,
-    profile.ionianBoots
-  );
-
-  const newSpells = profile.spells.map((s, i) => {
-    if (i === spellIndex) {
-      return { ...s, endTime: elapsed + cooldown };
-    }
-    return { ...s };
-  });
-
-  state.profiles[profileIndex] = {
-    ...profile,
-    spells: newSpells
-  };
-
-  render();
-}
-
-function handleGameButton() {
-  if (state.gameStartTime === null) {
-    state.gameStartTime = Date.now();
-    state.timerInterval = setInterval(render, 1000);
-  } else {
-    clearInterval(state.timerInterval);
-    state.timerInterval = null;
-    state.gameStartTime = null;
-    state.profiles = Array.from({ length: 5 }, () => ({
-      cosmicInsight: false,
-      ionianBoots: false,
-      spells: BASE_COOLDOWNS.map(cd => ({ baseCooldown: cd, endTime: null }))
-    }));
-  }
-  render();
-}
-
-function handleTimeAdjust(e) {
-  if (state.gameStartTime === null) return;
-  const delta = Number(e.target.dataset.delta);
-  const elapsed = getElapsedSeconds();
-  const newElapsed = Math.max(0, elapsed + delta);
-  const actualDelta = newElapsed - elapsed;
-  if (actualDelta === 0) return;
-  state.gameStartTime = state.gameStartTime - actualDelta * 1000;
-  state.profiles = state.profiles.map(profile => ({
-    ...profile,
-    spells: profile.spells.map(spell =>
-      spell.endTime !== null
-        ? { ...spell, endTime: spell.endTime + actualDelta }
-        : spell
-    )
-  }));
-  render();
-}
-
-function handleLanguageChange(e) {
-  const lang = e.target.dataset.lang;
-  if (lang && lang !== state.currentLanguage) {
-    state.currentLanguage = lang;
-    render();
-  }
-}
-
-// --- DOM Generation ---
-function createProfiles() {
-  const container = document.getElementById('profiles');
-  container.innerHTML = '';
-
-  state.profiles.forEach((profile, profileIndex) => {
-    const col = document.createElement('div');
-    col.className = 'profile';
-    col.dataset.index = profileIndex;
-
-    const label = document.createElement('div');
-    label.className = 'profile-label';
-    label.textContent = PROFILE_LABELS[state.currentLanguage][profileIndex];
-    col.appendChild(label);
-
-    // Toggles
-    const togglesDiv = document.createElement('div');
-    togglesDiv.className = 'toggles';
-
-    ['cosmicInsight', 'ionianBoots'].forEach(type => {
-      const lbl = document.createElement('label');
-      lbl.className = 'toggle';
-
-      const input = document.createElement('input');
-      input.type = 'checkbox';
-      input.className = 'toggle-input';
-      input.dataset.type = type;
-      input.dataset.profile = profileIndex;
-      input.checked = profile[type];
-      input.addEventListener('change', handleToggle);
-
-      const box = document.createElement('span');
-      box.className = 'toggle-box';
-
-      const text = document.createElement('span');
-      text.className = 'toggle-label';
-      text.textContent = I18N[state.currentLanguage][type];
-
-      lbl.appendChild(input);
-      lbl.appendChild(box);
-      lbl.appendChild(text);
-      togglesDiv.appendChild(lbl);
-    });
-
-    col.appendChild(togglesDiv);
-
-    // Spells
-    const spellsDiv = document.createElement('div');
-    spellsDiv.className = 'spells';
-    const elapsed = getElapsedSeconds();
-    const i18n = I18N[state.currentLanguage];
-
-    profile.spells.forEach((spell, spellIndex) => {
-      const isOnCooldown = spell.endTime !== null && spell.endTime > elapsed;
-
-      if (isOnCooldown) {
-        const cdDiv = document.createElement('div');
-        cdDiv.className = 'spell-cd';
-        cdDiv.dataset.profile = profileIndex;
-        cdDiv.dataset.spell = spellIndex;
-        cdDiv.addEventListener('click', handleSpellClick);
-
-        const remaining = spell.endTime - elapsed;
-
-        const row1 = document.createElement('div');
-        row1.className = 'cd-row';
-
-        const lbl1 = document.createElement('span');
-        lbl1.className = 'cd-label';
-        lbl1.textContent = i18n.cdLabel;
-        const time1 = document.createElement('span');
-        time1.className = 'cd-time cd-remaining';
-        time1.textContent = formatTime(Math.max(0, remaining));
-        row1.appendChild(lbl1);
-        row1.appendChild(time1);
-
-        const row2 = document.createElement('div');
-        row2.className = 'cd-row';
-
-        const lbl2 = document.createElement('span');
-        lbl2.className = 'cd-label';
-        lbl2.textContent = i18n.etaLabel;
-        const time2 = document.createElement('span');
-        time2.className = 'cd-time cd-eta';
-        time2.textContent = formatTime(spell.endTime);
-        row2.appendChild(lbl2);
-        row2.appendChild(time2);
-
-        cdDiv.appendChild(row1);
-        cdDiv.appendChild(row2);
-        spellsDiv.appendChild(cdDiv);
-      } else {
-        const btn = document.createElement('button');
-        btn.className = 'spell-btn' + (spellIndex === 2 ? ' flash' : '');
-        btn.dataset.profile = profileIndex;
-        btn.dataset.spell = spellIndex;
-        btn.disabled = state.gameStartTime === null;
-        btn.textContent = i18n.spells[spellIndex];
-        btn.addEventListener('click', handleSpellClick);
-        spellsDiv.appendChild(btn);
-      }
-    });
-
-    col.appendChild(spellsDiv);
-    container.appendChild(col);
-  });
-}
-
-// --- Render ---
-function render() {
-  cleanupExpiredCooldowns();
-
-  document.getElementById('game-timer').textContent = formatTime(getElapsedSeconds());
-
-  const gameBtn = document.getElementById('game-btn');
-  const i18n = I18N[state.currentLanguage];
-  gameBtn.textContent = state.gameStartTime === null ? i18n.gameStart : i18n.gameEnd;
-
-  document.getElementById('title').textContent = i18n.title;
-
-  document.querySelectorAll('.lang-btn').forEach(btn => {
-    btn.classList.toggle('active', btn.dataset.lang === state.currentLanguage);
-  });
-
-  const gameRunning = state.gameStartTime !== null;
-  document.querySelectorAll('.time-adj-btn').forEach(btn => {
-    btn.disabled = !gameRunning;
-  });
-
-  createProfiles();
-}
-
-// --- Init ---
-document.getElementById('game-btn').addEventListener('click', handleGameButton);
-document.querySelectorAll('.time-adj-btn').forEach(btn => {
-  btn.addEventListener('click', handleTimeAdjust);
-});
-document.querySelectorAll('.lang-btn').forEach(btn => {
-  btn.addEventListener('click', handleLanguageChange);
-});
-render();
-  </script>
 </body>
 </html>
